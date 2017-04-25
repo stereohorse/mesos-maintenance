@@ -1,0 +1,11 @@
+- src: https://github.com/stereohorse/ansible-zookeeper.git
+  name: zookeeper
+
+- src: https://github.com/stereohorse/ansible-mesos-master.git
+  name: mesos-master
+
+- src: https://github.com/stereohorse/ansible-mesos-agent.git
+  name: mesos-agent
+
+- src: https://github.com/stereohorse/ansible-marathon.git
+  name: marathon
