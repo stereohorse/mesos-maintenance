@@ -4,7 +4,7 @@
       { "hostname" : "vm2" }
     ],
     "unavailability" : {
-      "start" : { "nanoseconds" : 1493135666000000000 },
+      "start" : { "nanoseconds" : <maintenance_start> },
       "duration" : { "nanoseconds" : 3600000000000 }
     }
   }]

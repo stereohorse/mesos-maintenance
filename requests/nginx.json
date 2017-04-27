@@ -1,0 +1,34 @@
+[{
+  "id": "/test/nginx",
+  "cpus": 0.1,
+  "mem": 128,
+  "instances": 2,
+  "constraints": [[
+    "hostname",
+    "GROUP_BY"
+  ]],
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "docker.moscow.alfaintra.net/nginx",
+      "network": "BRIDGE",
+      "portMappings": [{
+        "containerPort": 8080
+      }]
+    }
+  },
+  "healthChecks": [{
+    "protocol": "COMMAND",
+    "command": {
+      "value": "echo 0"
+    },
+    "gracePeriodSeconds": 300,
+    "intervalSeconds": 5,
+    "timeoutSeconds": 20,
+    "maxConsecutiveFailures": 3
+  }],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0.5,
+    "maximumOverCapacity": 0.5
+  }
+}]
