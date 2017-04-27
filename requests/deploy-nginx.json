@@ -10,7 +10,7 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "docker.moscow.alfaintra.net/nginx",
+      "image": "nginx:stable-alpine",
       "network": "BRIDGE",
       "portMappings": [{
         "containerPort": 8080
