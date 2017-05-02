@@ -1,0 +1,39 @@
+- hosts: agents
+  become: yes
+  vars:
+    marathon_url: http://vm1:8080
+  tasks:
+
+    - name: stop mesos agent
+      service:
+        name: mesos-slave
+        state: stopped
+        enabled: false
+
+    - name: wait for tasks migration
+      uri:
+        url: "{{ marathon_url }}/v2/tasks"
+        method: GET
+        return_content: yes
+        body_format: json
+      register: response
+      until: response.json.tasks | selectattr('host', 'equalto', ansible_hostname) | join | length == 0
+      retries: 30
+      delay: 10
+
+    - name: stop all docker containers
+      shell: docker stop $(docker ps -aq)
+
+    - name: delete all containers
+      shell: docker rm $(docker ps -aq)
+
+    - name: delete mesos slave work dir
+      file:
+        path: /var/lib/mesos
+        state: absent
+
+    - name: start mesos agent
+      service:
+        name: mesos-slave
+        state: started
+        enabled: yes

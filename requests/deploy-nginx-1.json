@@ -1,7 +1,7 @@
 [{
-  "id": "/test/nginx",
+  "id": "nginx-distributed",
   "cpus": 0.1,
-  "mem": 128,
+  "mem": 64,
   "instances": 2,
   "constraints": [[
     "hostname",

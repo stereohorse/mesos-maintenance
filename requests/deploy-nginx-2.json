@@ -1,0 +1,35 @@
+[{
+  "id": "nginx-constrainted",
+  "cpus": 0.1,
+  "mem": 64,
+  "instances": 1,
+  "constraints": [[
+    "hostname",
+    "LIKE",
+    "vm2"
+  ]],
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "nginx:stable-alpine",
+      "network": "BRIDGE",
+      "portMappings": [{
+        "containerPort": 8080
+      }]
+    }
+  },
+  "healthChecks": [{
+    "protocol": "COMMAND",
+    "command": {
+      "value": "echo 0"
+    },
+    "gracePeriodSeconds": 300,
+    "intervalSeconds": 5,
+    "timeoutSeconds": 20,
+    "maxConsecutiveFailures": 3
+  }],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0.5,
+    "maximumOverCapacity": 0.5
+  }
+}]
