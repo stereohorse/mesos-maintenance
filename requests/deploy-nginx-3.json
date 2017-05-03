@@ -1,11 +1,12 @@
 [{
-  "id": "nginx-distributed-1",
+  "id": "nginx-constrainted",
   "cpus": 0.1,
   "mem": 64,
-  "instances": 2,
+  "instances": 1,
   "constraints": [[
     "hostname",
-    "GROUP_BY"
+    "LIKE",
+    "vm1"
   ]],
   "container": {
     "type": "DOCKER",

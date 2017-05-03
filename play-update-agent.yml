@@ -32,6 +32,11 @@
         path: /var/lib/mesos
         state: absent
 
+    - name: setup resources
+      copy:
+        dest: /etc/mesos-slave/resources
+        content: ports:[9000-10000]
+
     - name: start mesos agent
       service:
         name: mesos-slave
