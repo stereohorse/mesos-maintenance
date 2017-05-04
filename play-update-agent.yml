@@ -10,32 +10,67 @@
         state: stopped
         enabled: false
 
-    - name: wait for tasks migration
+    - name: get tasks on that host
       uri:
         url: "{{ marathon_url }}/v2/tasks"
         method: GET
         return_content: yes
         body_format: json
       register: response
-      until: response.json.tasks | selectattr('host', 'equalto', ansible_hostname) | join | length == 0
+
+    - set_fact:
+        deployed_apps: >
+          {{ response.json.tasks
+           | selectattr('host', 'equalto', ansible_hostname)
+           | map(attribute='appId')
+           | unique
+           | list }}
+
+    - name: wait for tasks drain
+      uri:
+        url: "{{ marathon_url }}/v2/tasks"
+        method: GET
+        return_content: yes
+        body_format: json
+      register: response
+      until: >
+        response.json.tasks
+        | selectattr('host', 'equalto', ansible_hostname)
+        | join
+        | length == 0
       retries: 30
       delay: 10
 
+    - name: each drained app should has at least 1 healthy task
+      uri:
+        url: "{{ marathon_url }}/v2/apps"
+        method: GET
+        return_content: yes
+        body_format: json
+      register: response
+      until: >
+        deployed_apps
+        | difference(
+           response.json.apps
+           | rejectattr('tasksHealthy', 'equalto', 0)
+           | map(attribute='id')
+           | unique
+           | list)
+        | length == 0
+      retries: 12
+      delay: 10
+      ignore_errors: yes
+
     - name: stop all docker containers
-      shell: docker stop $(docker ps -aq)
+      shell: docker stop $(docker ps -aq -f 'name=mesos')
 
     - name: delete all containers
-      shell: docker rm $(docker ps -aq)
+      shell: docker rm $(docker ps -aq -f 'name=mesos')
 
     - name: delete mesos slave work dir
       file:
         path: /var/lib/mesos
         state: absent
-
-    - name: setup resources
-      copy:
-        dest: /etc/mesos-slave/resources
-        content: ports:[9000-10000]
 
     - name: start mesos agent
       service:

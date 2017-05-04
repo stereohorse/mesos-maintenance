@@ -14,15 +14,15 @@
       "image": "nginx:stable-alpine",
       "network": "BRIDGE",
       "portMappings": [{
-        "containerPort": 8080
+        "containerPort": 80
       }]
     }
   },
+  "cmd": "sleep 30 && nginx -g 'daemon off;'",
   "healthChecks": [{
-    "protocol": "COMMAND",
-    "command": {
-      "value": "echo 0"
-    },
+    "protocol": "HTTP",
+    "path": "/",
+    "portIndex": 0,
     "gracePeriodSeconds": 300,
     "intervalSeconds": 5,
     "timeoutSeconds": 20,
