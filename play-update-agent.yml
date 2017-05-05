@@ -61,11 +61,21 @@
       delay: 10
       ignore_errors: yes
 
-    - name: stop all docker containers
-      shell: docker stop $(docker ps -aq -f 'name=mesos')
+      # not 'docker stop $(docker ps -aq)'
+      # because we want independent fails
+    - name: get containers started by agent
+      shell: docker ps -aq -f 'name=mesos'
+      register: containers
 
-    - name: delete all containers
-      shell: docker rm $(docker ps -aq -f 'name=mesos')
+    - name: try to gracefully stop that containers
+      shell: docker stop {{ item }}
+      with_items: "{{ containers.stdout_lines }}"
+      ignore_errors: yes
+
+    - name: and delete them
+      shell: docker rm {{ item }}
+      with_items: "{{ containers.stdout_lines }}"
+      ignore_errors: yes
 
     - name: delete mesos slave work dir
       file:
